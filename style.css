@@ -1,0 +1,562 @@
+/* =============================================
+   CSS VARIABLES
+   ============================================= */
+:root {
+  --bg:          #FAF7F2;
+  --surface:     #FFFFFF;
+  --accent:      #E07A3A;
+  --accent-soft: #FDF0E8;
+  --text-dark:   #2C1A0E;
+  --text-mid:    #6B4C35;
+  --text-light:  #B08060;
+  --border:      #EDE5DC;
+  --shadow:      0 4px 24px rgba(44,26,14,0.08);
+  --radius:      16px;
+  --radius-sm:   8px;
+  --radius-pill: 999px;
+}
+
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text-dark);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* =============================================
+   HERO
+   ============================================= */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--bg);
+}
+
+.hero-inner {
+  max-width: 560px;
+  padding: 20px;
+}
+
+.hero-inner h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--text-mid);
+  margin-bottom: 36px;
+}
+
+/* =============================================
+   CARD
+   ============================================= */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(44,26,14,0.13);
+}
+
+/* =============================================
+   TAGS
+   ============================================= */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.tag .remove {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  font-size: 16px;
+  line-height: 1;
+}
+.tag .remove:hover { opacity: 1; }
+
+.tag-listesi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 20px;
+  min-height: 36px;
+}
+
+/* =============================================
+   BUTTONS
+   ============================================= */
+.btn-primary {
+  background: #9B4209;
+  color: white;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 14px 32px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover {
+  background: #7C3407;
+  transform: scale(1.02);
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-geri {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-geri:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* =============================================
+   FILTER BUTTONS
+   ============================================= */
+.filtreler {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.filtre-blok label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-dark);
+}
+.filter-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* =============================================
+   MALZEME INPUT
+   ============================================= */
+.malzeme-input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.malzeme-input-row input {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 12px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text-dark);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.malzeme-input-row input:focus { border-color: var(--accent); }
+.malzeme-input-row input::placeholder { color: var(--text-light); }
+
+.btn-tarif-ara {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 16px 32px;
+  font-size: 17px;
+}
+
+/* =============================================
+   ERROR MESSAGE
+   ============================================= */
+.hata-mesaji {
+  background: #fff0ee;
+  border: 1px solid #f5c6c0;
+  border-radius: var(--radius-sm);
+  color: #c0392b;
+  padding: 12px 18px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* =============================================
+   RESULTS
+   ============================================= */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.grid-tarifler {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .grid-tarifler { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .grid-tarifler { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* =============================================
+   RECIPE CARD
+   ============================================= */
+.tarif-kart {
+  cursor: pointer;
+  overflow: hidden;
+}
+.tarif-kart-foto {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  background: var(--accent-soft);
+}
+.tarif-kart-foto-skeleton {
+  width: 100%;
+  height: 180px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+.tarif-kart h3 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+.tarif-kart p {
+  font-size: 14px;
+  color: var(--text-mid);
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tarif-kart-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tarif-kart-meta span {
+  font-size: 12px;
+  color: var(--text-light);
+  background: var(--bg);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+}
+
+/* =============================================
+   SKELETON LOADING
+   ============================================= */
+.skeleton {
+  background: linear-gradient(90deg, #f0e8df 25%, #faf7f2 50%, #f0e8df 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+.skeleton-text.short { width: 60%; }
+
+/* =============================================
+   MODAL
+   ============================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 26, 14, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-kart {
+  background: var(--surface);
+  border-radius: var(--radius);
+  max-width: 680px;
+  width: 100%;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-kapat {
+  position: sticky;
+  top: 12px;
+  float: right;
+  margin: 12px 12px 0 0;
+  background: var(--bg);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-mid);
+  transition: background 0.15s;
+  z-index: 10;
+}
+.modal-kapat:hover { background: var(--border); }
+
+.modal-foto {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: var(--radius) var(--radius) 0 0;
+  display: block;
+}
+
+.modal-icerik { padding: 28px; }
+
+.modal-icerik h2 {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+.modal-aciklama {
+  color: var(--text-mid);
+  margin-bottom: 16px;
+}
+.modal-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.modal-meta span {
+  font-size: 13px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: var(--radius-pill);
+  padding: 5px 14px;
+  font-weight: 500;
+}
+
+.modal-bolumler {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 560px) {
+  .modal-bolumler { grid-template-columns: 1fr; }
+}
+
+.modal-malzemeler h3,
+.modal-adimlar h3 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: var(--text-mid);
+}
+
+.modal-malzemeler ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal-malzemeler li {
+  font-size: 14px;
+  padding-left: 16px;
+  position: relative;
+}
+.modal-malzemeler li::before {
+  content: '•';
+  color: var(--accent);
+  position: absolute;
+  left: 0;
+}
+
+.modal-adimlar ol {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.modal-adimlar li { font-size: 14px; color: var(--text-mid); }
+
+/* =============================================
+   TAT HARITASI
+   ============================================= */
+.tat-haritasi-container {
+  max-width: 280px;
+  margin: 24px auto 0;
+  text-align: center;
+}
+.tat-haritasi-container h3 {
+  font-size: 1rem;
+  color: var(--text-mid);
+  margin-bottom: 12px;
+}
+
+/* =============================================
+   CHAT PANEL
+   ============================================= */
+.chat-panel {
+  margin-top: 48px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 28px;
+}
+.chat-panel h3 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+.sohbet-mesajlar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 60px;
+  margin-bottom: 16px;
+}
+
+.sohbet-mesaj {
+  max-width: 80%;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sohbet-mesaj.user {
+  align-self: flex-end;
+  background: #9B4209;
+  color: white;
+  border-radius: var(--radius) var(--radius) 4px var(--radius);
+}
+.sohbet-mesaj.assistant {
+  align-self: flex-start;
+  background: var(--bg);
+  color: var(--text-dark);
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+}
+
+.sohbet-input-row {
+  display: flex;
+  gap: 10px;
+}
+.sohbet-input-row input {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 12px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-dark);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.sohbet-input-row input:focus { border-color: var(--accent); }
+.sohbet-input-row input::placeholder { color: var(--text-light); }
+.sohbet-input-row .btn-primary {
+  padding: 12px 24px;
+  font-size: 14px;
+}
+
+/* =============================================
+   INPUT PANEL SECTION
+   ============================================= */
+#input-panel {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+#input-panel h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+/* =============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================= */
+@media (max-width: 480px) {
+  .filtreler { grid-template-columns: 1fr; }
+  .malzeme-input-row { flex-direction: column; }
+  .malzeme-input-row .btn-primary { width: 100%; }
+}

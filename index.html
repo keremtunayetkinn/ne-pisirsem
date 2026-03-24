@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ne Pişirsem?</title>
+  <meta name="description" content="Elindeki malzemeleri gir, yapay zeka senin için Türk ve dünya mutfağından tarif önersin.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍳</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"></noscript>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <h1>Ne Pişirsem?</h1>
+      <p class="hero-sub">Elindeki malzemeleri gir, yapay zeka senin için tarif önersin.</p>
+      <button class="btn-primary" id="btn-baslayalim">Hadi Başlayalım →</button>
+    </div>
+  </section>
+
+  <!-- INPUT PANEL -->
+  <section id="input-panel" style="display:none;">
+    <div class="container">
+      <h2>Malzemeler</h2>
+
+      <div class="malzeme-input-row">
+        <input type="text" id="malzeme-input" placeholder="Malzeme ekle (örn: domates)" autocomplete="off">
+        <button class="btn-primary" id="btn-malzeme-ekle">Ekle</button>
+      </div>
+
+      <div id="malzeme-listesi" class="tag-listesi"></div>
+
+      <div class="filtreler">
+        <div class="filtre-blok">
+          <label>Süre</label>
+          <div class="filter-group" data-kategori="sure">
+            <button class="filter-btn" data-deger="15dk">15 dk</button>
+            <button class="filter-btn" data-deger="30dk">30 dk</button>
+            <button class="filter-btn" data-deger="1saat">1 saat+</button>
+          </div>
+        </div>
+        <div class="filtre-blok">
+          <label>Bütçe</label>
+          <div class="filter-group" data-kategori="butce">
+            <button class="filter-btn" data-deger="ekonomik">Ekonomik</button>
+            <button class="filter-btn" data-deger="orta">Orta</button>
+          </div>
+        </div>
+        <div class="filtre-blok">
+          <label>Kişi Sayısı</label>
+          <div class="filter-group" data-kategori="kisi">
+            <button class="filter-btn active" data-deger="1" aria-pressed="true">1 Kişi</button>
+            <button class="filter-btn" data-deger="2">2 Kişi</button>
+            <button class="filter-btn" data-deger="4+">4+ Kişi</button>
+          </div>
+        </div>
+        <div class="filtre-blok">
+          <label>Zorluk</label>
+          <div class="filter-group" data-kategori="zorluk">
+            <button class="filter-btn" data-deger="kolay">Kolay</button>
+            <button class="filter-btn" data-deger="orta">Orta</button>
+            <button class="filter-btn" data-deger="zor">Zor</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="hata-mesaji" class="hata-mesaji" style="display:none;"></div>
+
+      <button class="btn-primary btn-tarif-ara" id="btn-tarif-ara">Tarif Bul ✨</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" style="display:none;">
+    <div class="container">
+      <div class="results-header">
+        <h2>Tarif Önerileri</h2>
+        <button class="btn-geri" id="btn-geri">← Yeni Arama</button>
+      </div>
+      <div id="tarif-grid" class="grid-tarifler"></div>
+
+      <!-- CHAT PANEL -->
+      <div id="chat-panel" class="chat-panel">
+        <h3>Asistanla Sohbet Et</h3>
+        <div id="sohbet-mesajlar" class="sohbet-mesajlar"></div>
+        <div class="sohbet-input-row">
+          <input type="text" id="sohbet-input" placeholder="Bir şeyler sor... (örn: daha hafif bir şey öner)">
+          <button class="btn-primary" id="btn-sohbet-gonder">Gönder</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- DETAIL MODAL -->
+  <div id="detail-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-kart">
+      <button class="modal-kapat" id="btn-modal-kapat">✕</button>
+      <img id="modal-foto" class="modal-foto" src="" alt="">
+      <div class="modal-icerik">
+        <h2 id="modal-ad"></h2>
+        <p id="modal-aciklama" class="modal-aciklama"></p>
+        <div class="modal-meta">
+          <span id="modal-sure"></span>
+          <span id="modal-zorluk"></span>
+          <span id="modal-kisi"></span>
+        </div>
+        <div class="modal-bolumler">
+          <div class="modal-malzemeler">
+            <h3>Malzemeler</h3>
+            <ul id="modal-malzeme-listesi"></ul>
+          </div>
+          <div class="modal-adimlar">
+            <h3>Yapılış</h3>
+            <ol id="modal-adim-listesi"></ol>
+          </div>
+        </div>
+        <div class="tat-haritasi-container">
+          <h3>Tat Haritası</h3>
+          <canvas id="tatChart" width="300" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
