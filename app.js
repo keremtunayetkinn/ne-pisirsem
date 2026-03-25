@@ -1,6 +1,18 @@
 'use strict';
 
 // =============================================
+// SECURITY: HTML escape — prevents XSS when inserting untrusted data into innerHTML
+// =============================================
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// =============================================
 // TRANSLATIONS
 // =============================================
 const TRANSLATIONS = {
@@ -221,11 +233,11 @@ const UI = {
       kart.dataset.index = i;
       kart.innerHTML = `
         <div class="tarif-kart-foto-skeleton skeleton"></div>
-        <h3>${tarif.ad}</h3>
-        <p>${tarif.aciklama}</p>
+        <h3>${esc(tarif.ad)}</h3>
+        <p>${esc(tarif.aciklama)}</p>
         <div class="tarif-kart-meta">
-          <span>⏱ ${tarif.sure}</span>
-          <span>🍴 ${tarif.zorluk}</span>
+          <span>⏱ ${esc(tarif.sure)}</span>
+          <span>🍴 ${esc(tarif.zorluk)}</span>
           <span>👥 ${t('kisiSuffix', tarif.kisi)}</span>
         </div>
         <button class="favori-kart-btn">${Favoriler.varMi(tarif.ad) ? '❤️' : '🤍'}</button>`;
@@ -263,10 +275,10 @@ const UI = {
     document.getElementById('modal-kisi').textContent = '👥 ' + t('kisiSuffix', tarif.kisi);
 
     const malzemeUl = document.getElementById('modal-malzeme-listesi');
-    malzemeUl.innerHTML = tarif.malzemeler.map(m => `<li>${m}</li>`).join('');
+    malzemeUl.innerHTML = tarif.malzemeler.map(m => `<li>${esc(m)}</li>`).join('');
 
     const adimOl = document.getElementById('modal-adim-listesi');
-    adimOl.innerHTML = tarif.adimlar.map(a => `<li>${a}</li>`).join('');
+    adimOl.innerHTML = tarif.adimlar.map(a => `<li>${esc(a)}</li>`).join('');
 
     const foto = document.getElementById('modal-foto');
     foto.style.display = 'none';
@@ -584,11 +596,11 @@ const Favoriler = {
       div.setAttribute('role', 'button');
       div.innerHTML = `
         <button class="favori-sil-btn">✕</button>
-        <h4>${item.tarif.ad}</h4>
-        <p>${item.tarif.aciklama}</p>
+        <h4>${esc(item.tarif.ad)}</h4>
+        <p>${esc(item.tarif.aciklama)}</p>
         <div class="favori-kart-meta">
-          <span>⏱ ${item.tarif.sure}</span>
-          <span>🍴 ${item.tarif.zorluk}</span>
+          <span>⏱ ${esc(item.tarif.sure)}</span>
+          <span>🍴 ${esc(item.tarif.zorluk)}</span>
           <span>👥 ${t('kisiSuffix', item.tarif.kisi)}</span>
         </div>
       `;
@@ -686,9 +698,9 @@ const Gecmis = {
       div.setAttribute('role', 'button');
 
       const malzemeHTML = item.malzemeler.length
-        ? item.malzemeler.map(m => `<span class="tag">${m}</span>`).join('')
+        ? item.malzemeler.map(m => `<span class="tag">${esc(m)}</span>`).join('')
         : '';
-      const tarifAdlari = item.tarifler.slice(0, 3).map(r => r.ad).join(', ');
+      const tarifAdlari = item.tarifler.slice(0, 3).map(r => esc(r.ad)).join(', ');
 
       div.innerHTML = `
         <div class="gecmis-item-meta">

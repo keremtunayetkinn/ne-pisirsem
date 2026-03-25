@@ -1,6 +1,26 @@
+const ipRequests = new Map();
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const WINDOW = 60_000;
+  const MAX = 30;
+  const entry = ipRequests.get(ip);
+  if (!entry || now - entry.start > WINDOW) {
+    ipRequests.set(ip, { start: now, count: 1 });
+    return true;
+  }
+  if (entry.count >= MAX) return false;
+  entry.count++;
+  return true;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
+  if (!checkRateLimit(ip)) {
+    return res.status(429).json({ url: null });
   }
 
   // Input validation (S3)
@@ -29,6 +49,9 @@ module.exports = async (req, res) => {
       const fd = await fallback.json();
       url = fd.photos?.[0]?.src?.large || null;
     }
+
+    // Validate URL is actually from Pexels before returning to client
+    if (url && !url.startsWith('https://images.pexels.com/')) url = null;
 
     return res.status(200).json({ url });
   } catch (hata) {
