@@ -474,6 +474,143 @@ img { max-width: 100%; display: block; }
 }
 
 /* =============================================
+   FAVORITES PANEL
+   ============================================= */
+#favoriler-panel {
+  margin-top: 40px;
+}
+
+.favoriler-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.favoriler-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.favoriler-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 560px) {
+  .favoriler-grid { grid-template-columns: 1fr; }
+}
+
+.favori-kart {
+  cursor: pointer;
+  padding: 14px 16px;
+  position: relative;
+}
+
+.favori-kart h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  margin-bottom: 4px;
+  padding-right: 28px;
+}
+
+.favori-kart p {
+  font-size: 13px;
+  color: var(--text-mid);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.favori-kart-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.favori-kart-meta span {
+  font-size: 11px;
+  color: var(--text-light);
+  background: var(--bg);
+  border-radius: var(--radius-pill);
+  padding: 3px 8px;
+}
+
+.favori-sil-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 50%;
+  transition: color 0.15s, background 0.15s;
+}
+
+.favori-sil-btn:hover {
+  color: #c0392b;
+  background: #fff0ee;
+}
+
+/* Heart toggle button on recipe result cards */
+.tarif-kart { position: relative; }
+
+.favori-kart-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--surface);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 50%;
+  transition: transform 0.15s;
+  z-index: 1;
+}
+
+.favori-kart-btn:hover { transform: scale(1.25); }
+
+/* Favorite button inside detail modal */
+.btn-modal-favori {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 8px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  margin-bottom: 20px;
+}
+
+.btn-modal-favori:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.btn-modal-favori.aktif {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: #fff5f5;
+}
+
+/* =============================================
    HISTORY PANEL
    ============================================= */
 #gecmis-panel {

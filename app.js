@@ -29,6 +29,10 @@ const TRANSLATIONS = {
     btnYeniArama: '← Yeni Arama',
     gecmisTitle: 'Geçmiş Aramalar',
     gecmisTemizle: 'Temizle',
+    favorilerTitle: 'Favorilerim',
+    favorilerTemizle: 'Temizle',
+    favoriEkle: 'Favorilere Ekle',
+    favoriCikar: 'Favorilerden Çıkar',
     modalMalzemeler: 'Malzemeler',
     modalYapilis: 'Yapılış',
     modalTatHaritasi: 'Tat Haritası',
@@ -68,6 +72,10 @@ const TRANSLATIONS = {
     btnYeniArama: '← New Search',
     gecmisTitle: 'Search History',
     gecmisTemizle: 'Clear',
+    favorilerTitle: 'My Favorites',
+    favorilerTemizle: 'Clear',
+    favoriEkle: 'Add to Favorites',
+    favoriCikar: 'Remove from Favorites',
     modalMalzemeler: 'Ingredients',
     modalYapilis: 'Instructions',
     modalTatHaritasi: 'Flavor Profile',
@@ -126,6 +134,7 @@ function dilUygula() {
   btnTr.setAttribute('aria-pressed', state.dil === 'tr' ? 'true' : 'false');
   btnEn.classList.toggle('active', state.dil === 'en');
   btnEn.setAttribute('aria-pressed', state.dil === 'en' ? 'true' : 'false');
+  Favoriler.render();
   Gecmis.render();
 }
 
@@ -210,7 +219,8 @@ const UI = {
           <span>⏱ ${tarif.sure}</span>
           <span>🍴 ${tarif.zorluk}</span>
           <span>👥 ${t('kisiSuffix', tarif.kisi)}</span>
-        </div>`;
+        </div>
+        <button class="favori-kart-btn">${Favoriler.varMi(tarif.ad) ? '❤️' : '🤍'}</button>`;
       kart.setAttribute('tabindex', '0');
       kart.setAttribute('role', 'button');
       kart.setAttribute('aria-label', t('recipeAriaLabel', tarif.ad));
@@ -218,6 +228,10 @@ const UI = {
       kart.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); UI.detayAc(tarif); }
       });
+      const favBtn = kart.querySelector('.favori-kart-btn');
+      favBtn.dataset.tarifad = tarif.ad;
+      favBtn.setAttribute('aria-label', t(Favoriler.varMi(tarif.ad) ? 'favoriCikar' : 'favoriEkle'));
+      favBtn.addEventListener('click', e => { e.stopPropagation(); Favoriler.toggle(tarif); });
       grid.appendChild(kart);
 
       API.fotografCek(tarif.pexels_arama, tarif.ad).then(url => {
@@ -257,6 +271,8 @@ const UI = {
         if (url) { foto.src = url; foto.style.display = ''; }
       });
     }
+
+    Favoriler._updateModalBtn(tarif.ad);
 
     document.getElementById('detail-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -398,6 +414,120 @@ function hataGoster(mesaj) {
   el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
+
+// =============================================
+// FAVORILER (Favorites)
+// =============================================
+const FAVORILER_KEY = 'nePisirsemFavoriler';
+
+const Favoriler = {
+  yukle() {
+    try { return JSON.parse(localStorage.getItem(FAVORILER_KEY) || '[]'); }
+    catch { return []; }
+  },
+
+  ekle(tarif) {
+    if (this.varMi(tarif.ad)) return;
+    const liste = this.yukle();
+    liste.unshift({ id: Date.now(), tarih: new Date().toISOString(), tarif });
+    localStorage.setItem(FAVORILER_KEY, JSON.stringify(liste));
+    this._updateKartBtnlari(tarif.ad, true);
+    this._updateModalBtn(tarif.ad);
+    this.render();
+  },
+
+  sil(tarifAd) {
+    const liste = this.yukle().filter(f => f.tarif.ad !== tarifAd);
+    localStorage.setItem(FAVORILER_KEY, JSON.stringify(liste));
+    this._updateKartBtnlari(tarifAd, false);
+    this._updateModalBtn(tarifAd);
+    this.render();
+  },
+
+  temizle() {
+    localStorage.removeItem(FAVORILER_KEY);
+    document.querySelectorAll('.favori-kart-btn').forEach(btn => {
+      btn.textContent = '🤍';
+      btn.setAttribute('aria-label', t('favoriEkle'));
+    });
+    this._updateModalBtn(state.seciliTarif?.ad);
+    this.render();
+  },
+
+  varMi(tarifAd) {
+    return this.yukle().some(f => f.tarif.ad === tarifAd);
+  },
+
+  toggle(tarif) {
+    if (this.varMi(tarif.ad)) this.sil(tarif.ad);
+    else this.ekle(tarif);
+  },
+
+  _updateKartBtnlari(tarifAd, isFavori) {
+    document.querySelectorAll('.favori-kart-btn').forEach(btn => {
+      if (btn.dataset.tarifad === tarifAd) {
+        btn.textContent = isFavori ? '❤️' : '🤍';
+        btn.setAttribute('aria-label', t(isFavori ? 'favoriCikar' : 'favoriEkle'));
+      }
+    });
+  },
+
+  _updateModalBtn(tarifAd) {
+    const btn = document.getElementById('btn-modal-favori');
+    if (!btn || !tarifAd) return;
+    const isFavori = this.varMi(tarifAd);
+    btn.textContent = isFavori ? `❤️ ${t('favoriCikar')}` : `🤍 ${t('favoriEkle')}`;
+    btn.classList.toggle('aktif', isFavori);
+  },
+
+  render() {
+    const panel = document.getElementById('favoriler-panel');
+    if (!panel) return;
+    const liste = this.yukle();
+
+    if (liste.length === 0) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
+
+    const header = panel.querySelector('.favoriler-header');
+    header.innerHTML = `
+      <span class="favoriler-header-title">${t('favorilerTitle')}</span>
+      <button class="btn-geri" id="btn-favoriler-temizle">${t('favorilerTemizle')}</button>
+    `;
+    document.getElementById('btn-favoriler-temizle').addEventListener('click', e => {
+      e.stopPropagation();
+      this.temizle();
+    });
+
+    const grid = panel.querySelector('.favoriler-grid');
+    grid.innerHTML = '';
+    liste.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'card favori-kart';
+      div.setAttribute('tabindex', '0');
+      div.setAttribute('role', 'button');
+      div.innerHTML = `
+        <button class="favori-sil-btn">✕</button>
+        <h4>${item.tarif.ad}</h4>
+        <p>${item.tarif.aciklama}</p>
+        <div class="favori-kart-meta">
+          <span>⏱ ${item.tarif.sure}</span>
+          <span>🍴 ${item.tarif.zorluk}</span>
+          <span>👥 ${t('kisiSuffix', item.tarif.kisi)}</span>
+        </div>
+      `;
+      const silBtn = div.querySelector('.favori-sil-btn');
+      silBtn.setAttribute('aria-label', t('favoriCikar'));
+      silBtn.addEventListener('click', e => { e.stopPropagation(); this.sil(item.tarif.ad); });
+
+      const open = () => UI.detayAc(item.tarif);
+      div.addEventListener('click', open);
+      div.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+      grid.appendChild(div);
+    });
+  }
+};
 
 // =============================================
 // GECMIS (History)
@@ -559,6 +689,11 @@ const Events = {
     // Geri butonu
     document.getElementById('btn-geri').addEventListener('click', () => {
       UI.gosterSection('input-panel');
+    });
+
+    // Modal favori butonu
+    document.getElementById('btn-modal-favori').addEventListener('click', () => {
+      if (state.seciliTarif) Favoriler.toggle(state.seciliTarif);
     });
 
     // Modal kapat
