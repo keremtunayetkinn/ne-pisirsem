@@ -474,69 +474,66 @@ img { max-width: 100%; display: block; }
 }
 
 /* =============================================
-   CHAT PANEL
+   HISTORY PANEL
    ============================================= */
-.chat-panel {
-  margin-top: 48px;
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 28px;
-}
-.chat-panel h3 {
-  font-size: 1.1rem;
-  margin-bottom: 16px;
+#gecmis-panel {
+  margin-top: 40px;
 }
 
-.sohbet-mesajlar {
+.gecmis-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.gecmis-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gecmis-liste {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 60px;
-  margin-bottom: 16px;
 }
 
-.sohbet-mesaj {
-  max-width: 80%;
-  padding: 10px 16px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  line-height: 1.5;
-}
-.sohbet-mesaj.user {
-  align-self: flex-end;
-  background: #9B4209;
-  color: white;
-  border-radius: var(--radius) var(--radius) 4px var(--radius);
-}
-.sohbet-mesaj.assistant {
-  align-self: flex-start;
-  background: var(--bg);
-  color: var(--text-dark);
-  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+.gecmis-item {
+  cursor: pointer;
+  padding: 16px 20px;
 }
 
-.sohbet-input-row {
+.gecmis-item-meta {
   display: flex;
+  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
-.sohbet-input-row input {
-  flex: 1;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-pill);
-  padding: 12px 20px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  color: var(--text-dark);
-  background: var(--bg);
-  outline: none;
-  transition: border-color 0.15s;
+
+.gecmis-tarih {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
 }
-.sohbet-input-row input:focus { border-color: var(--accent); }
-.sohbet-input-row input::placeholder { color: var(--text-light); }
-.sohbet-input-row .btn-primary {
-  padding: 12px 24px;
-  font-size: 14px;
+
+.gecmis-malzemeler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.gecmis-malzemeler .tag {
+  font-size: 12px;
+  padding: 3px 10px;
+}
+
+.gecmis-tarifler {
+  font-size: 13px;
+  color: var(--text-mid);
 }
 
 /* =============================================

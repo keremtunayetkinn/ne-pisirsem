@@ -27,9 +27,8 @@ const TRANSLATIONS = {
     btnTarifBul: 'Tarif Bul ✨',
     tarifOnerileri: 'Tarif Önerileri',
     btnYeniArama: '← Yeni Arama',
-    asistanTitle: 'Asistanla Sohbet Et',
-    sohbetPlaceholder: 'Bir şeyler sor... (örn: daha hafif bir şey öner)',
-    btnGonder: 'Gönder',
+    gecmisTitle: 'Geçmiş Aramalar',
+    gecmisTemizle: 'Temizle',
     modalMalzemeler: 'Malzemeler',
     modalYapilis: 'Yapılış',
     modalTatHaritasi: 'Tat Haritası',
@@ -37,8 +36,6 @@ const TRANSLATIONS = {
     kisiSuffix: n => `${n} kişi`,
     removeAriaLabel: m => `${m} malzemesini sil`,
     recipeAriaLabel: ad => `${ad} tarifini görüntüle`,
-    chatNewRecipes: n => `${n} yeni tarif önerdim. Kartlara tıklayarak detayları görebilirsin.`,
-    chatError: 'Bir sorun oluştu, tekrar dener misin?',
     userInfoFallback: 'Bugün ne pişirsem?',
     userInfoIngredients: m => `Elimdeki malzemeler: ${m}`,
     userInfoSure: s => `Süre: ${s}`,
@@ -69,9 +66,8 @@ const TRANSLATIONS = {
     btnTarifBul: 'Find Recipes ✨',
     tarifOnerileri: 'Recipe Suggestions',
     btnYeniArama: '← New Search',
-    asistanTitle: 'Chat with Assistant',
-    sohbetPlaceholder: 'Ask something... (e.g., suggest something lighter)',
-    btnGonder: 'Send',
+    gecmisTitle: 'Search History',
+    gecmisTemizle: 'Clear',
     modalMalzemeler: 'Ingredients',
     modalYapilis: 'Instructions',
     modalTatHaritasi: 'Flavor Profile',
@@ -79,8 +75,6 @@ const TRANSLATIONS = {
     kisiSuffix: n => `${n} ${n === 1 ? 'person' : 'people'}`,
     removeAriaLabel: m => `Remove ${m}`,
     recipeAriaLabel: ad => `View ${ad} recipe`,
-    chatNewRecipes: n => `I suggested ${n} new recipe${n !== 1 ? 's' : ''}. Click the cards to see details.`,
-    chatError: 'Something went wrong, please try again.',
     userInfoFallback: 'What should I cook today?',
     userInfoIngredients: m => `My ingredients: ${m}`,
     userInfoSure: s => `Time: ${s}`,
@@ -104,7 +98,6 @@ const state = {
   },
   tarifler: [],
   seciliTarif: null,
-  sohbetGecmisi: [],
   fotoCache: {}
 };
 
@@ -133,6 +126,7 @@ function dilUygula() {
   btnTr.setAttribute('aria-pressed', state.dil === 'tr' ? 'true' : 'false');
   btnEn.classList.toggle('active', state.dil === 'en');
   btnEn.setAttribute('aria-pressed', state.dil === 'en' ? 'true' : 'false');
+  Gecmis.render();
 }
 
 // =============================================
@@ -294,25 +288,14 @@ const UI = {
     document.getElementById('btn-tarif-ara').disabled = false;
   },
 
-  mesajEkle(rol, metin) {
-    const kutu = document.getElementById('sohbet-mesajlar');
-    const div = document.createElement('div');
-    div.className = `sohbet-mesaj ${rol}`;
-    div.textContent = metin;
-    kutu.appendChild(div);
-    kutu.scrollTop = kutu.scrollHeight;
-  }
 };
 
 // =============================================
 // API MODULE
 // =============================================
 const API = {
-  async tarifAra(sohbet, userMessage = _kullaniciBilgisiOlustur()) {
-    const mesajlar = [
-      ...sohbet.slice(-4),
-      { role: 'user', content: userMessage }
-    ];
+  async tarifAra(userMessage = _kullaniciBilgisiOlustur()) {
+    const mesajlar = [{ role: 'user', content: userMessage }];
 
     const yanit = await fetch('/api/claude', {
       method: 'POST',
@@ -409,18 +392,114 @@ function _kullaniciBilgisiOlustur() {
   return parcalar.join('. ') || t('userInfoFallback');
 }
 
-function _tarihiKirp() {
-  if (state.sohbetGecmisi.length > 10) {
-    state.sohbetGecmisi.splice(0, state.sohbetGecmisi.length - 10);
-  }
-}
-
 function hataGoster(mesaj) {
   const el = document.getElementById('hata-mesaji');
   el.textContent = mesaj;
   el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
+
+// =============================================
+// GECMIS (History)
+// =============================================
+const GECMIS_KEY = 'nePisirsemGecmis';
+const MAX_GECMIS = 20;
+
+const Gecmis = {
+  yukle() {
+    try { return JSON.parse(localStorage.getItem(GECMIS_KEY) || '[]'); }
+    catch { return []; }
+  },
+
+  kaydet(malzemeler, filtreler, tarifler) {
+    const liste = this.yukle();
+    liste.unshift({
+      id: Date.now(),
+      tarih: new Date().toISOString(),
+      malzemeler: [...malzemeler],
+      filtreler: { ...filtreler },
+      tarifler
+    });
+    if (liste.length > MAX_GECMIS) liste.splice(MAX_GECMIS);
+    localStorage.setItem(GECMIS_KEY, JSON.stringify(liste));
+    this.render();
+  },
+
+  temizle() {
+    localStorage.removeItem(GECMIS_KEY);
+    this.render();
+  },
+
+  _tarihFormatla(isoStr) {
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const mins  = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days  = Math.floor(diff / 86400000);
+    if (state.dil === 'tr') {
+      if (mins < 1)   return 'Az önce';
+      if (mins < 60)  return `${mins} dakika önce`;
+      if (hours < 24) return `${hours} saat önce`;
+      if (days < 7)   return `${days} gün önce`;
+      return new Date(isoStr).toLocaleDateString('tr-TR');
+    } else {
+      if (mins < 1)   return 'Just now';
+      if (mins < 60)  return `${mins} minute${mins !== 1 ? 's' : ''} ago`;
+      if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+      if (days < 7)   return `${days} day${days !== 1 ? 's' : ''} ago`;
+      return new Date(isoStr).toLocaleDateString('en-US');
+    }
+  },
+
+  render() {
+    const panel = document.getElementById('gecmis-panel');
+    if (!panel) return;
+    const liste = this.yukle();
+
+    if (liste.length === 0) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
+
+    // Header
+    const header = panel.querySelector('.gecmis-header');
+    header.innerHTML = `
+      <span class="gecmis-header-title">${t('gecmisTitle')}</span>
+      <button class="btn-geri" id="btn-gecmis-temizle">${t('gecmisTemizle')}</button>
+    `;
+    document.getElementById('btn-gecmis-temizle').addEventListener('click', e => {
+      e.stopPropagation();
+      this.temizle();
+    });
+
+    // List
+    const listeEl = panel.querySelector('.gecmis-liste');
+    listeEl.innerHTML = '';
+    liste.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'card gecmis-item';
+      div.setAttribute('tabindex', '0');
+      div.setAttribute('role', 'button');
+
+      const malzemeHTML = item.malzemeler.length
+        ? item.malzemeler.map(m => `<span class="tag">${m}</span>`).join('')
+        : '';
+      const tarifAdlari = item.tarifler.slice(0, 3).map(r => r.ad).join(', ');
+
+      div.innerHTML = `
+        <div class="gecmis-item-meta">
+          <span class="gecmis-tarih">${this._tarihFormatla(item.tarih)}</span>
+          <div class="gecmis-malzemeler">${malzemeHTML}</div>
+        </div>
+        <div class="gecmis-tarifler">${tarifAdlari}</div>
+      `;
+
+      const open = () => { UI.gosterSection('results'); UI.tarifleriRender(item.tarifler); };
+      div.addEventListener('click', open);
+      div.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+      listeEl.appendChild(div);
+    });
+  }
+};
 
 // =============================================
 // EVENTS
@@ -465,16 +544,11 @@ const Events = {
     document.getElementById('btn-tarif-ara').addEventListener('click', async () => {
       UI.gosterSection('results');
       UI.loadingGoster();
-      const kullaniciBilgisi = _kullaniciBilgisiOlustur();
       try {
-        const sonuc = await API.tarifAra(state.sohbetGecmisi, kullaniciBilgisi);
+        const sonuc = await API.tarifAra();
         UI.loadingGizle();
         UI.tarifleriRender(sonuc.tarifler);
-        state.sohbetGecmisi.push(
-          { role: 'user', content: kullaniciBilgisi },
-          { role: 'assistant', content: sonuc.tarifler.map(t => t.ad).join(', ') + ' tarif önerildi.' }
-        );
-        _tarihiKirp();
+        Gecmis.kaydet(state.malzemeler, state.filtreler, sonuc.tarifler);
       } catch (hata) {
         UI.loadingGizle();
         UI.gosterSection('input-panel');
@@ -498,23 +572,15 @@ const Events = {
       if (e.key === 'Escape') UI.detayKapat();
     });
 
-    // Sohbet gönder
-    document.getElementById('btn-sohbet-gonder').addEventListener('click', () => _sohbetGonder());
-    document.getElementById('sohbet-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') _sohbetGonder();
-    });
-
     // Dil değiştirme
     document.getElementById('btn-dil-tr').addEventListener('click', () => {
       if (state.dil === 'tr') return;
       state.dil = 'tr';
-      state.sohbetGecmisi = [];
       dilUygula();
     });
     document.getElementById('btn-dil-en').addEventListener('click', () => {
       if (state.dil === 'en') return;
       state.dil = 'en';
-      state.sohbetGecmisi = [];
       dilUygula();
     });
 
@@ -522,33 +588,6 @@ const Events = {
     dilUygula();
   }
 };
-
-async function _sohbetGonder() {
-  const inp = document.getElementById('sohbet-input');
-  const metin = inp.value.trim();
-  if (!metin) return;
-  inp.value = '';
-
-  UI.mesajEkle('user', metin);
-
-  const btn = document.getElementById('btn-sohbet-gonder');
-  btn.disabled = true;
-
-  try {
-    const sonuc = await API.tarifAra(state.sohbetGecmisi, metin);
-    state.sohbetGecmisi.push(
-      { role: 'user', content: metin },
-      { role: 'assistant', content: sonuc.tarifler.map(t => t.ad).join(', ') + ' tarif önerildi.' }
-    );
-    _tarihiKirp();
-    UI.tarifleriRender(sonuc.tarifler);
-    UI.mesajEkle('assistant', t('chatNewRecipes', sonuc.tarifler.length));
-  } catch {
-    UI.mesajEkle('assistant', t('chatError'));
-  } finally {
-    btn.disabled = false;
-  }
-}
 
 // =============================================
 // INIT
