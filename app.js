@@ -38,6 +38,10 @@ const TRANSLATIONS = {
     modalTatHaritasi: 'Tat Haritası',
     radarLabels: ['🔴 Acı', '🟡 Ekşi', '🟠 Tuzlu', '🟢 Tatlı', '🟤 Umami', '⚪ Bitter'],
     kisiSuffix: n => `${n} kişi`,
+    paylasBtnLabel: 'Paylaş',
+    paylasKopyala: 'Linki Kopyala',
+    kopyalandi: 'Kopyalandı! ✓',
+    paylasMetni: (ad, aciklama, url) => `🍳 *${ad}*\n${aciklama}\n\nNe Pişirsem? → ${url}`,
     removeAriaLabel: m => `${m} malzemesini sil`,
     recipeAriaLabel: ad => `${ad} tarifini görüntüle`,
     userInfoFallback: 'Bugün ne pişirsem?',
@@ -81,6 +85,10 @@ const TRANSLATIONS = {
     modalTatHaritasi: 'Flavor Profile',
     radarLabels: ['🔴 Spicy', '🟡 Sour', '🟠 Salty', '🟢 Sweet', '🟤 Umami', '⚪ Bitter'],
     kisiSuffix: n => `${n} ${n === 1 ? 'person' : 'people'}`,
+    paylasBtnLabel: 'Share',
+    paylasKopyala: 'Copy Link',
+    kopyalandi: 'Copied! ✓',
+    paylasMetni: (ad, aciklama, url) => `🍳 *${ad}*\n${aciklama}\n\nWhat Should I Cook? → ${url}`,
     removeAriaLabel: m => `Remove ${m}`,
     recipeAriaLabel: ad => `View ${ad} recipe`,
     userInfoFallback: 'What should I cook today?',
@@ -273,6 +281,7 @@ const UI = {
     }
 
     Favoriler._updateModalBtn(tarif.ad);
+    _paylasGuncelle(tarif);
 
     document.getElementById('detail-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -406,6 +415,47 @@ function _kullaniciBilgisiOlustur() {
   if (state.filtreler.kisi)   parcalar.push(t('userInfoKisi', state.filtreler.kisi));
   if (state.filtreler.zorluk) parcalar.push(t('userInfoZorluk', state.filtreler.zorluk));
   return parcalar.join('. ') || t('userInfoFallback');
+}
+
+function _paylasGuncelle(tarif) {
+  const container = document.getElementById('modal-paylas');
+  if (!container) return;
+
+  const siteUrl = 'https://ne-pisirsem.vercel.app';
+  const metin = t('paylasMetni', tarif.ad, tarif.aciklama, siteUrl);
+  const encoded = encodeURIComponent(metin);
+
+  container.innerHTML = `
+    <h4 class="paylas-baslik">${t('paylasBtnLabel')}</h4>
+    <div class="paylas-satirlar">
+      <a class="paylas-btn paylas-wa" href="https://wa.me/?text=${encoded}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a class="paylas-btn paylas-x" href="https://twitter.com/intent/tweet?text=${encoded}" target="_blank" rel="noopener noreferrer">𝕏 X</a>
+      <button class="paylas-btn paylas-insta" id="btn-paylas-insta">Instagram</button>
+      <button class="paylas-btn paylas-kopyala" id="btn-paylas-kopyala">${t('paylasKopyala')}</button>
+    </div>
+  `;
+
+  async function _kopyala(btn, text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      const prev = btn.textContent;
+      btn.textContent = t('kopyalandi');
+      setTimeout(() => { btn.textContent = prev; }, 2000);
+    } catch { /* ignore */ }
+  }
+
+  document.getElementById('btn-paylas-kopyala').addEventListener('click', function() {
+    _kopyala(this, siteUrl);
+  });
+
+  document.getElementById('btn-paylas-insta').addEventListener('click', async function() {
+    if (navigator.share) {
+      try { await navigator.share({ title: tarif.ad, text: metin, url: siteUrl }); }
+      catch { /* user cancelled */ }
+    } else {
+      _kopyala(this, metin);
+    }
+  });
 }
 
 function hataGoster(mesaj) {

@@ -674,6 +674,46 @@ img { max-width: 100%; display: block; }
 }
 
 /* =============================================
+   SHARE PANEL
+   ============================================= */
+.modal-paylas {
+  margin-top: 20px;
+}
+.paylas-baslik {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.paylas-satirlar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.paylas-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.paylas-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.paylas-btn:active { transform: translateY(0); }
+.paylas-wa   { background: #25D366; color: #fff; }
+.paylas-x    { background: #000;    color: #fff; }
+.paylas-insta { background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045); color: #fff; }
+.paylas-kopyala { background: transparent; color: var(--text-dark); border: 1.5px solid var(--border); }
+
+/* =============================================
    INPUT PANEL SECTION
    ============================================= */
 #input-panel {
