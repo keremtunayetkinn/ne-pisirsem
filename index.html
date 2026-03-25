@@ -15,65 +15,70 @@
 </head>
 <body>
 
+  <div class="dil-toggle">
+    <button id="btn-dil-tr" class="active" aria-pressed="true" aria-label="Türkçe">TR</button>
+    <button id="btn-dil-en" aria-pressed="false" aria-label="English">EN</button>
+  </div>
+
   <main>
   <!-- HERO -->
   <section id="hero">
     <div class="hero-inner">
       <h1>Ne Pişirsem?</h1>
-      <p class="hero-sub">Elindeki malzemeleri gir, yapay zeka senin için tarif önersin.</p>
-      <button class="btn-primary" id="btn-baslayalim">Hadi Başlayalım →</button>
+      <p class="hero-sub" data-i18n="heroSub">Elindeki malzemeleri gir, yapay zeka senin için tarif önersin.</p>
+      <button class="btn-primary" id="btn-baslayalim" data-i18n="btnBaslayalim">Hadi Başlayalım →</button>
     </div>
   </section>
 
   <!-- INPUT PANEL -->
   <section id="input-panel" style="display:none;">
     <div class="container">
-      <h2>Malzemeler</h2>
+      <h2 data-i18n="malzemelerTitle">Malzemeler</h2>
 
       <div class="malzeme-input-row">
-        <input type="text" id="malzeme-input" placeholder="Malzeme ekle (örn: domates)" autocomplete="off">
-        <button class="btn-primary" id="btn-malzeme-ekle">Ekle</button>
+        <input type="text" id="malzeme-input" data-i18n-placeholder="malzemeInputPlaceholder" placeholder="Malzeme ekle (örn: domates)" autocomplete="off">
+        <button class="btn-primary" id="btn-malzeme-ekle" data-i18n="btnEkle">Ekle</button>
       </div>
 
       <div id="malzeme-listesi" class="tag-listesi"></div>
 
       <div class="filtreler">
         <div class="filtre-blok">
-          <label>Süre</label>
+          <label data-i18n="labelSure">Süre</label>
           <div class="filter-group" data-kategori="sure">
-            <button class="filter-btn" data-deger="15dk">15 dk</button>
-            <button class="filter-btn" data-deger="30dk">30 dk</button>
-            <button class="filter-btn" data-deger="1saat">1 saat+</button>
+            <button class="filter-btn" data-deger="15dk" data-i18n="filter15dk">15 dk</button>
+            <button class="filter-btn" data-deger="30dk" data-i18n="filter30dk">30 dk</button>
+            <button class="filter-btn" data-deger="1saat" data-i18n="filter1saat">1 saat+</button>
           </div>
         </div>
         <div class="filtre-blok">
-          <label>Bütçe</label>
+          <label data-i18n="labelButce">Bütçe</label>
           <div class="filter-group" data-kategori="butce">
-            <button class="filter-btn" data-deger="ekonomik">Ekonomik</button>
-            <button class="filter-btn" data-deger="orta">Orta</button>
+            <button class="filter-btn" data-deger="ekonomik" data-i18n="filterEkonomik">Ekonomik</button>
+            <button class="filter-btn" data-deger="orta" data-i18n="filterOrta">Orta</button>
           </div>
         </div>
         <div class="filtre-blok">
-          <label>Kişi Sayısı</label>
+          <label data-i18n="labelKisi">Kişi Sayısı</label>
           <div class="filter-group" data-kategori="kisi">
-            <button class="filter-btn active" data-deger="1" aria-pressed="true">1 Kişi</button>
-            <button class="filter-btn" data-deger="2">2 Kişi</button>
-            <button class="filter-btn" data-deger="4+">4+ Kişi</button>
+            <button class="filter-btn active" data-deger="1" aria-pressed="true" data-i18n="filterKisi1">1 Kişi</button>
+            <button class="filter-btn" data-deger="2" data-i18n="filterKisi2">2 Kişi</button>
+            <button class="filter-btn" data-deger="4+" data-i18n="filterKisi4">4+ Kişi</button>
           </div>
         </div>
         <div class="filtre-blok">
-          <label>Zorluk</label>
+          <label data-i18n="labelZorluk">Zorluk</label>
           <div class="filter-group" data-kategori="zorluk">
-            <button class="filter-btn" data-deger="kolay">Kolay</button>
-            <button class="filter-btn" data-deger="orta">Orta</button>
-            <button class="filter-btn" data-deger="zor">Zor</button>
+            <button class="filter-btn" data-deger="kolay" data-i18n="filterKolay">Kolay</button>
+            <button class="filter-btn" data-deger="orta" data-i18n="filterOrta">Orta</button>
+            <button class="filter-btn" data-deger="zor" data-i18n="filterZor">Zor</button>
           </div>
         </div>
       </div>
 
       <div id="hata-mesaji" class="hata-mesaji" style="display:none;"></div>
 
-      <button class="btn-primary btn-tarif-ara" id="btn-tarif-ara">Tarif Bul ✨</button>
+      <button class="btn-primary btn-tarif-ara" id="btn-tarif-ara" data-i18n="btnTarifBul">Tarif Bul ✨</button>
     </div>
   </section>
 
@@ -81,18 +86,18 @@
   <section id="results" style="display:none;">
     <div class="container">
       <div class="results-header">
-        <h2>Tarif Önerileri</h2>
-        <button class="btn-geri" id="btn-geri">← Yeni Arama</button>
+        <h2 data-i18n="tarifOnerileri">Tarif Önerileri</h2>
+        <button class="btn-geri" id="btn-geri" data-i18n="btnYeniArama">← Yeni Arama</button>
       </div>
       <div id="tarif-grid" class="grid-tarifler"></div>
 
       <!-- CHAT PANEL -->
       <div id="chat-panel" class="chat-panel">
-        <h3>Asistanla Sohbet Et</h3>
+        <h3 data-i18n="asistanTitle">Asistanla Sohbet Et</h3>
         <div id="sohbet-mesajlar" class="sohbet-mesajlar"></div>
         <div class="sohbet-input-row">
-          <input type="text" id="sohbet-input" placeholder="Bir şeyler sor... (örn: daha hafif bir şey öner)">
-          <button class="btn-primary" id="btn-sohbet-gonder">Gönder</button>
+          <input type="text" id="sohbet-input" data-i18n-placeholder="sohbetPlaceholder" placeholder="Bir şeyler sor... (örn: daha hafif bir şey öner)">
+          <button class="btn-primary" id="btn-sohbet-gonder" data-i18n="btnGonder">Gönder</button>
         </div>
       </div>
     </div>
@@ -115,16 +120,16 @@
         </div>
         <div class="modal-bolumler">
           <div class="modal-malzemeler">
-            <h3>Malzemeler</h3>
+            <h3 data-i18n="modalMalzemeler">Malzemeler</h3>
             <ul id="modal-malzeme-listesi"></ul>
           </div>
           <div class="modal-adimlar">
-            <h3>Yapılış</h3>
+            <h3 data-i18n="modalYapilis">Yapılış</h3>
             <ol id="modal-adim-listesi"></ol>
           </div>
         </div>
         <div class="tat-haritasi-container">
-          <h3>Tat Haritası</h3>
+          <h3 data-i18n="modalTatHaritasi">Tat Haritası</h3>
           <canvas id="tatChart" width="300" height="300"></canvas>
         </div>
       </div>

@@ -19,12 +19,21 @@ function checkRateLimit(ip) {
   return true;
 }
 
-const SISTEM_PROMPTU = `Yemek asistanısın. Türk ve dünya mutfağından özgün tarifler (tarhana, keşkek, kimchi pilavı vb. dahil) öner. 2-3 tarif ver.
+const SISTEM_PROMPTU = {
+  tr: `Yemek asistanısın. Türk ve dünya mutfağından özgün tarifler öner. 2-3 tarif ver.
 
 SADECE bu JSON'u döndür, başka hiçbir şey yazma:
 {"tarifler":[{"ad":"","aciklama":"2 cümle.","sure":"","zorluk":"","kisi":0,"malzemeler":["ölçülü"],"adimlar":["adım"],"tat_profili":{"aci":0,"eksi":0,"tuzlu":0,"tatli":0,"umami":0,"bitter":0},"pexels_arama":"english"}]}
 
-Kurallar: puanlar 0-10 tam sayı · pexels_arama İngilizce · malzemeleri ölçülü yaz · markdown ekleme`;
+Kurallar: puanlar 0-10 tam sayı · pexels_arama İngilizce · malzemeleri ölçülü yaz · markdown ekleme`,
+
+  en: `You are a recipe assistant. Suggest 2-3 original recipes from Turkish and world cuisines. Write ALL content in English.
+
+Return ONLY this JSON, nothing else:
+{"tarifler":[{"ad":"","aciklama":"2 sentences.","sure":"e.g. 30 minutes","zorluk":"Easy/Medium/Hard","kisi":0,"malzemeler":["measured"],"adimlar":["step"],"tat_profili":{"aci":0,"eksi":0,"tuzlu":0,"tatli":0,"umami":0,"bitter":0},"pexels_arama":"english"}]}
+
+Rules: scores 0-10 integers · pexels_arama in English · write measured ingredients · no markdown`
+};
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -34,32 +43,34 @@ module.exports = async (req, res) => {
   // Rate limiting (S1)
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
   if (!checkRateLimit(ip)) {
-    return res.status(429).json({ error: 'Çok fazla istek. Lütfen bir dakika bekleyin.' });
+    return res.status(429).json({ error: 'Too many requests. Please wait a minute.' });
   }
 
   // Input validation (S2)
-  const { messages } = req.body;
+  const { messages, dil = 'tr' } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: 'Geçersiz istek formatı.' });
+    return res.status(400).json({ error: 'Invalid request format.' });
   }
   if (messages.length > 20) {
-    return res.status(400).json({ error: 'Sohbet geçmişi çok uzun.' });
+    return res.status(400).json({ error: 'Conversation history too long.' });
   }
   const totalLen = messages.reduce((sum, m) => sum + (typeof m.content === 'string' ? m.content.length : 0), 0);
   if (totalLen > 50_000) {
-    return res.status(400).json({ error: 'İstek içeriği çok uzun.' });
+    return res.status(400).json({ error: 'Request content too long.' });
   }
+
+  const sistemPrompt = SISTEM_PROMPTU[dil] || SISTEM_PROMPTU.tr;
 
   try {
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1600,
-      system: SISTEM_PROMPTU,
+      system: sistemPrompt,
       messages
     });
 
     return res.status(200).json({ content: response.content[0].text });
   } catch (hata) {
-    return res.status(500).json({ error: 'API hatası: ' + hata.message });
+    return res.status(500).json({ error: 'API error: ' + hata.message });
   }
 };

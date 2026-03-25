@@ -1,9 +1,100 @@
 'use strict';
 
 // =============================================
+// TRANSLATIONS
+// =============================================
+const TRANSLATIONS = {
+  tr: {
+    heroSub: 'Elindeki malzemeleri gir, yapay zeka senin için tarif önersin.',
+    btnBaslayalim: 'Hadi Başlayalım →',
+    malzemelerTitle: 'Malzemeler',
+    malzemeInputPlaceholder: 'Malzeme ekle (örn: domates)',
+    btnEkle: 'Ekle',
+    labelSure: 'Süre',
+    labelButce: 'Bütçe',
+    labelKisi: 'Kişi Sayısı',
+    labelZorluk: 'Zorluk',
+    filter15dk: '15 dk',
+    filter30dk: '30 dk',
+    filter1saat: '1 saat+',
+    filterEkonomik: 'Ekonomik',
+    filterOrta: 'Orta',
+    filterKisi1: '1 Kişi',
+    filterKisi2: '2 Kişi',
+    filterKisi4: '4+ Kişi',
+    filterKolay: 'Kolay',
+    filterZor: 'Zor',
+    btnTarifBul: 'Tarif Bul ✨',
+    tarifOnerileri: 'Tarif Önerileri',
+    btnYeniArama: '← Yeni Arama',
+    asistanTitle: 'Asistanla Sohbet Et',
+    sohbetPlaceholder: 'Bir şeyler sor... (örn: daha hafif bir şey öner)',
+    btnGonder: 'Gönder',
+    modalMalzemeler: 'Malzemeler',
+    modalYapilis: 'Yapılış',
+    modalTatHaritasi: 'Tat Haritası',
+    radarLabels: ['🔴 Acı', '🟡 Ekşi', '🟠 Tuzlu', '🟢 Tatlı', '🟤 Umami', '⚪ Bitter'],
+    kisiSuffix: n => `${n} kişi`,
+    removeAriaLabel: m => `${m} malzemesini sil`,
+    recipeAriaLabel: ad => `${ad} tarifini görüntüle`,
+    chatNewRecipes: n => `${n} yeni tarif önerdim. Kartlara tıklayarak detayları görebilirsin.`,
+    chatError: 'Bir sorun oluştu, tekrar dener misin?',
+    userInfoFallback: 'Bugün ne pişirsem?',
+    userInfoIngredients: m => `Elimdeki malzemeler: ${m}`,
+    userInfoSure: s => `Süre: ${s}`,
+    userInfoButce: b => `Bütçe: ${b}`,
+    userInfoKisi: k => `Kişi sayısı: ${k}`,
+    userInfoZorluk: z => `Zorluk: ${z}`,
+  },
+  en: {
+    heroSub: 'Enter your ingredients, let AI suggest recipes for you.',
+    btnBaslayalim: "Let's Get Started →",
+    malzemelerTitle: 'Ingredients',
+    malzemeInputPlaceholder: 'Add ingredient (e.g., tomato)',
+    btnEkle: 'Add',
+    labelSure: 'Time',
+    labelButce: 'Budget',
+    labelKisi: 'Servings',
+    labelZorluk: 'Difficulty',
+    filter15dk: '15 min',
+    filter30dk: '30 min',
+    filter1saat: '1 hour+',
+    filterEkonomik: 'Budget-friendly',
+    filterOrta: 'Medium',
+    filterKisi1: '1 Person',
+    filterKisi2: '2 People',
+    filterKisi4: '4+ People',
+    filterKolay: 'Easy',
+    filterZor: 'Hard',
+    btnTarifBul: 'Find Recipes ✨',
+    tarifOnerileri: 'Recipe Suggestions',
+    btnYeniArama: '← New Search',
+    asistanTitle: 'Chat with Assistant',
+    sohbetPlaceholder: 'Ask something... (e.g., suggest something lighter)',
+    btnGonder: 'Send',
+    modalMalzemeler: 'Ingredients',
+    modalYapilis: 'Instructions',
+    modalTatHaritasi: 'Flavor Profile',
+    radarLabels: ['🔴 Spicy', '🟡 Sour', '🟠 Salty', '🟢 Sweet', '🟤 Umami', '⚪ Bitter'],
+    kisiSuffix: n => `${n} ${n === 1 ? 'person' : 'people'}`,
+    removeAriaLabel: m => `Remove ${m}`,
+    recipeAriaLabel: ad => `View ${ad} recipe`,
+    chatNewRecipes: n => `I suggested ${n} new recipe${n !== 1 ? 's' : ''}. Click the cards to see details.`,
+    chatError: 'Something went wrong, please try again.',
+    userInfoFallback: 'What should I cook today?',
+    userInfoIngredients: m => `My ingredients: ${m}`,
+    userInfoSure: s => `Time: ${s}`,
+    userInfoButce: b => `Budget: ${b}`,
+    userInfoKisi: k => `Servings: ${k}`,
+    userInfoZorluk: z => `Difficulty: ${z}`,
+  }
+};
+
+// =============================================
 // STATE
 // =============================================
 const state = {
+  dil: 'tr',
   malzemeler: [],
   filtreler: {
     sure: null,
@@ -16,6 +107,33 @@ const state = {
   sohbetGecmisi: [],
   fotoCache: {}
 };
+
+// Translation helper
+function t(key, ...args) {
+  const val = TRANSLATIONS[state.dil][key];
+  return typeof val === 'function' ? val(...args) : (val ?? key);
+}
+
+// Apply all data-i18n translations to the DOM
+function dilUygula() {
+  const lang = TRANSLATIONS[state.dil];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = lang[el.dataset.i18n];
+    if (v !== undefined && typeof v !== 'function') el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const v = lang[el.dataset.i18nPlaceholder];
+    if (v !== undefined) el.placeholder = v;
+  });
+  document.documentElement.lang = state.dil;
+  document.title = state.dil === 'tr' ? 'Ne Pişirsem?' : 'What Should I Cook?';
+  const btnTr = document.getElementById('btn-dil-tr');
+  const btnEn = document.getElementById('btn-dil-en');
+  btnTr.classList.toggle('active', state.dil === 'tr');
+  btnTr.setAttribute('aria-pressed', state.dil === 'tr' ? 'true' : 'false');
+  btnEn.classList.toggle('active', state.dil === 'en');
+  btnEn.setAttribute('aria-pressed', state.dil === 'en' ? 'true' : 'false');
+}
 
 // =============================================
 // UI MODULE
@@ -40,12 +158,11 @@ const UI = {
     state.malzemeler.forEach((m, i) => {
       const tag = document.createElement('span');
       tag.className = 'tag';
-      // textContent yerine innerHTML kullanmıyoruz — XSS önlemi (A2)
       tag.textContent = m + ' ';
       const removeBtn = document.createElement('span');
       removeBtn.className = 'remove';
       removeBtn.setAttribute('data-index', i);
-      removeBtn.setAttribute('aria-label', `${m} malzemesini sil`);
+      removeBtn.setAttribute('aria-label', t('removeAriaLabel', m));
       removeBtn.setAttribute('role', 'button');
       removeBtn.setAttribute('tabindex', '0');
       removeBtn.textContent = '×';
@@ -73,7 +190,7 @@ const UI = {
     grup.querySelectorAll('.filter-btn').forEach(btn => {
       const aktif = btn.dataset.deger === state.filtreler[kategori];
       btn.classList.toggle('active', aktif);
-      btn.setAttribute('aria-pressed', aktif ? 'true' : 'false'); // A3
+      btn.setAttribute('aria-pressed', aktif ? 'true' : 'false');
     });
   },
 
@@ -98,13 +215,13 @@ const UI = {
         <div class="tarif-kart-meta">
           <span>⏱ ${tarif.sure}</span>
           <span>🍴 ${tarif.zorluk}</span>
-          <span>👥 ${tarif.kisi} kişi</span>
+          <span>👥 ${t('kisiSuffix', tarif.kisi)}</span>
         </div>`;
-      kart.setAttribute('tabindex', '0');                          // A1
+      kart.setAttribute('tabindex', '0');
       kart.setAttribute('role', 'button');
-      kart.setAttribute('aria-label', `${tarif.ad} tarifini görüntüle`);
+      kart.setAttribute('aria-label', t('recipeAriaLabel', tarif.ad));
       kart.addEventListener('click', () => UI.detayAc(tarif));
-      kart.addEventListener('keydown', e => {                      // A1
+      kart.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); UI.detayAc(tarif); }
       });
       grid.appendChild(kart);
@@ -127,7 +244,7 @@ const UI = {
     document.getElementById('modal-aciklama').textContent = tarif.aciklama;
     document.getElementById('modal-sure').textContent = '⏱ ' + tarif.sure;
     document.getElementById('modal-zorluk').textContent = '🍴 ' + tarif.zorluk;
-    document.getElementById('modal-kisi').textContent = '👥 ' + tarif.kisi + ' kişi';
+    document.getElementById('modal-kisi').textContent = '👥 ' + t('kisiSuffix', tarif.kisi);
 
     const malzemeUl = document.getElementById('modal-malzeme-listesi');
     malzemeUl.innerHTML = tarif.malzemeler.map(m => `<li>${m}</li>`).join('');
@@ -191,18 +308,16 @@ const UI = {
 // API MODULE
 // =============================================
 const API = {
-  // K3: malzemeler/filtreler parametreleri kaldırıldı — state'den okunuyor
-  // userMessage: K1/K2 fix — caller tek bir snapshot alıp her iki yerde kullanır
   async tarifAra(sohbet, userMessage = _kullaniciBilgisiOlustur()) {
     const mesajlar = [
-      ...sohbet.slice(-4),  // P1: API'ya son 4 mesaj (2 tur) gönderilir
+      ...sohbet.slice(-4),
       { role: 'user', content: userMessage }
     ];
 
     const yanit = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: mesajlar })
+      body: JSON.stringify({ messages: mesajlar, dil: state.dil })
     });
 
     const metin = await yanit.text();
@@ -248,7 +363,7 @@ const TatHaritasi = {
     this._chart = new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: ['🔴 Acı', '🟡 Ekşi', '🟠 Tuzlu', '🟢 Tatlı', '🟤 Umami', '⚪ Bitter'],
+        labels: TRANSLATIONS[state.dil].radarLabels,
         datasets: [{
           data: [
             tatProfili.aci, tatProfili.eksi, tatProfili.tuzlu,
@@ -286,15 +401,14 @@ const TatHaritasi = {
 function _kullaniciBilgisiOlustur() {
   const parcalar = [];
   if (state.malzemeler.length > 0)
-    parcalar.push(`Elimdeki malzemeler: ${state.malzemeler.join(', ')}`);
-  if (state.filtreler.sure)   parcalar.push(`Süre: ${state.filtreler.sure}`);
-  if (state.filtreler.butce)  parcalar.push(`Bütçe: ${state.filtreler.butce}`);
-  if (state.filtreler.kisi)   parcalar.push(`Kişi sayısı: ${state.filtreler.kisi}`);
-  if (state.filtreler.zorluk) parcalar.push(`Zorluk: ${state.filtreler.zorluk}`);
-  return parcalar.join('. ') || 'Bugün ne pişirsem?';
+    parcalar.push(t('userInfoIngredients', state.malzemeler.join(', ')));
+  if (state.filtreler.sure)   parcalar.push(t('userInfoSure', state.filtreler.sure));
+  if (state.filtreler.butce)  parcalar.push(t('userInfoButce', state.filtreler.butce));
+  if (state.filtreler.kisi)   parcalar.push(t('userInfoKisi', state.filtreler.kisi));
+  if (state.filtreler.zorluk) parcalar.push(t('userInfoZorluk', state.filtreler.zorluk));
+  return parcalar.join('. ') || t('userInfoFallback');
 }
 
-// P1: Sohbet geçmişini son 10 mesajla sınırla
 function _tarihiKirp() {
   if (state.sohbetGecmisi.length > 10) {
     state.sohbetGecmisi.splice(0, state.sohbetGecmisi.length - 10);
@@ -335,8 +449,8 @@ const Events = {
       }
     });
 
-    // A3: filtre butonları başlangıç aria-pressed durumu
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+    // Filtre butonları aria-pressed başlangıç durumu
+    ['sure', 'butce', 'kisi', 'zorluk'].forEach(kat => UI._filtreButonlariniGuncelle(kat));
 
     // Filtre butonları
     document.querySelectorAll('.filter-group').forEach(grup => {
@@ -351,7 +465,6 @@ const Events = {
     document.getElementById('btn-tarif-ara').addEventListener('click', async () => {
       UI.gosterSection('results');
       UI.loadingGoster();
-      // K1: tek bir snapshot — API'ya gönderilen ve geçmişe yazılan aynı değer
       const kullaniciBilgisi = _kullaniciBilgisiOlustur();
       try {
         const sonuc = await API.tarifAra(state.sohbetGecmisi, kullaniciBilgisi);
@@ -361,7 +474,7 @@ const Events = {
           { role: 'user', content: kullaniciBilgisi },
           { role: 'assistant', content: sonuc.tarifler.map(t => t.ad).join(', ') + ' tarif önerildi.' }
         );
-        _tarihiKirp(); // P1
+        _tarihiKirp();
       } catch (hata) {
         UI.loadingGizle();
         UI.gosterSection('input-panel');
@@ -390,6 +503,23 @@ const Events = {
     document.getElementById('sohbet-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') _sohbetGonder();
     });
+
+    // Dil değiştirme
+    document.getElementById('btn-dil-tr').addEventListener('click', () => {
+      if (state.dil === 'tr') return;
+      state.dil = 'tr';
+      state.sohbetGecmisi = [];
+      dilUygula();
+    });
+    document.getElementById('btn-dil-en').addEventListener('click', () => {
+      if (state.dil === 'en') return;
+      state.dil = 'en';
+      state.sohbetGecmisi = [];
+      dilUygula();
+    });
+
+    // Başlangıç dil uygulaması
+    dilUygula();
   }
 };
 
@@ -400,8 +530,6 @@ async function _sohbetGonder() {
   inp.value = '';
 
   UI.mesajEkle('user', metin);
-  // K2: mesajı geçmişe ÖNCEden ekleme — tarifAra zaten userMessage olarak sonuna ekler.
-  // Başarı durumunda geçmişe yazılır; hata durumunda orphan mesaj kalmaz.
 
   const btn = document.getElementById('btn-sohbet-gonder');
   btn.disabled = true;
@@ -412,11 +540,11 @@ async function _sohbetGonder() {
       { role: 'user', content: metin },
       { role: 'assistant', content: sonuc.tarifler.map(t => t.ad).join(', ') + ' tarif önerildi.' }
     );
-    _tarihiKirp(); // P1
+    _tarihiKirp();
     UI.tarifleriRender(sonuc.tarifler);
-    UI.mesajEkle('assistant', `${sonuc.tarifler.length} yeni tarif önerdim. Kartlara tıklayarak detayları görebilirsin.`);
+    UI.mesajEkle('assistant', t('chatNewRecipes', sonuc.tarifler.length));
   } catch {
-    UI.mesajEkle('assistant', 'Bir sorun oluştu, tekrar dener misin?');
+    UI.mesajEkle('assistant', t('chatError'));
   } finally {
     btn.disabled = false;
   }

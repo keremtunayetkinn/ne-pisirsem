@@ -553,6 +553,41 @@ img { max-width: 100%; display: block; }
 }
 
 /* =============================================
+   LANGUAGE TOGGLE
+   ============================================= */
+.dil-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  box-shadow: var(--shadow);
+}
+
+.dil-toggle button {
+  background: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dil-toggle button.active {
+  background: #9B4209;
+  color: white;
+}
+
+/* =============================================
    RESPONSIVE ADJUSTMENTS
    ============================================= */
 @media (max-width: 480px) {
