@@ -52,7 +52,7 @@ const TRANSLATIONS = {
     userInfoZorluk: z => `Zorluk: ${z}`,
   },
   en: {
-    heroSub: 'Enter your ingredients, let AI suggest recipes for you.',
+    heroSub: 'Enter your ingredients and let AI suggest recipes for you.',
     btnBaslayalim: "Let's Get Started →",
     malzemelerTitle: 'Ingredients',
     malzemeInputPlaceholder: 'Add ingredient (e.g., tomato)',
