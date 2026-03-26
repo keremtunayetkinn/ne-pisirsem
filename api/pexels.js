@@ -1,5 +1,5 @@
 const ALLOWED_ORIGINS = [
-  'https://ne-pisirsem.vercel.app',
+  'https://taste-lab.vercel.app',
   'http://localhost:3000',
   'http://127.0.0.1:5500'
 ];

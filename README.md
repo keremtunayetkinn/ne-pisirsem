@@ -2,7 +2,7 @@
 
 An AI-powered recipe suggestion app. Enter the ingredients you have at home and get 2–3 original recipes from Turkish and world cuisines — complete with photos, step-by-step instructions, and a flavor profile chart.
 
-**Live demo:** [ne-pisirsem.vercel.app](https://ne-pisirsem.vercel.app)
+**Live demo:** [taste-lab.vercel.app](https://taste-lab.vercel.app)
 
 ---
 
@@ -36,7 +36,7 @@ An AI-powered recipe suggestion app. Enter the ingredients you have at home and 
 ## Project Structure
 
 ```
-ne-pisirsem/
+taste-lab/
 ├── index.html          # Single-page app shell
 ├── style.css           # All styles
 ├── app.js              # Frontend logic (UI, API calls, state)
