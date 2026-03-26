@@ -9,20 +9,7 @@ function isOriginAllowed(req) {
   return ALLOWED_ORIGINS.some(o => origin.startsWith(o));
 }
 
-const ipRequests = new Map();
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const WINDOW = 60_000;
-  const MAX = 30;
-  const entry = ipRequests.get(ip);
-  if (!entry || now - entry.start > WINDOW) {
-    ipRequests.set(ip, { start: now, count: 1 });
-    return true;
-  }
-  if (entry.count >= MAX) return false;
-  entry.count++;
-  return true;
-}
+const { getPexelsLimiter } = require('./lib/ratelimit');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -34,7 +21,8 @@ module.exports = async (req, res) => {
   }
 
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
-  if (!checkRateLimit(ip)) {
+  const { success } = await getPexelsLimiter().limit(ip);
+  if (!success) {
     return res.status(429).json({ url: null });
   }
 

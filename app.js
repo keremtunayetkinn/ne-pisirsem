@@ -254,7 +254,9 @@ const UI = {
       favBtn.addEventListener('click', e => { e.stopPropagation(); Favoriler.toggle(tarif); });
       grid.appendChild(kart);
 
-      API.fotografCek(tarif.pexels_arama, tarif.ad).then(url => {
+      // Prime photo cache from server-fetched URL (pexels_arama no longer on client)
+      if (tarif.foto) state.fotoCache[tarif.ad] = tarif.foto;
+      API.fotografCek(null, tarif.ad).then(url => {
         const skeleton = kart.querySelector('.tarif-kart-foto-skeleton');
         if (!url) { skeleton.remove(); return; }
         const img = document.createElement('img');
@@ -287,7 +289,7 @@ const UI = {
       foto.src = cachedUrl;
       foto.style.display = '';
     } else {
-      API.fotografCek(tarif.pexels_arama, tarif.ad).then(url => {
+      API.fotografCek(null, tarif.ad).then(url => {
         if (url) { foto.src = url; foto.style.display = ''; }
       });
     }
@@ -340,16 +342,11 @@ const API = {
       body: JSON.stringify({ messages: mesajlar, dil: state.dil })
     });
 
-    const metin = await yanit.text();
     let veri;
-    try { veri = JSON.parse(metin); } catch { throw new Error(metin.slice(0, 100)); }
+    try { veri = await yanit.json(); } catch { throw new Error('Sunucu yanıtı ayrıştırılamadı'); }
     if (!yanit.ok) throw new Error(veri.error || 'API hatası');
-    const temiz = veri.content.replace(/```json|```/g, '').trim();
-    try {
-      return JSON.parse(temiz);
-    } catch {
-      throw new Error('ayrıştırılamadı');
-    }
+    if (!Array.isArray(veri.tarifler)) throw new Error('Geçersiz tarif formatı');
+    return veri;
   },
 
   async fotografCek(pexelsArama, tarifAd) {
@@ -358,7 +355,7 @@ const API = {
       const yanit = await fetch('/api/pexels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        body: JSON.stringify({ arama: pexelsArama })
+        body: JSON.stringify({ arama: pexelsArama || tarifAd })
       });
       const veri = await yanit.json();
       const url = veri.url || null;
