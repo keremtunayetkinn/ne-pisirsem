@@ -1,5 +1,13 @@
 'use strict';
 
+// Load print-media font stylesheet without blocking render
+(function () {
+  var fl = document.getElementById('font-link');
+  if (!fl) return;
+  if (fl.sheet) { fl.media = 'all'; }
+  else { fl.addEventListener('load', function () { fl.media = 'all'; }); }
+}());
+
 // =============================================
 // SECURITY: HTML escape — prevents XSS when inserting untrusted data into innerHTML
 // =============================================
