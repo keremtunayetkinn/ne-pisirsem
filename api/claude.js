@@ -164,6 +164,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ tarifler: parsed.tarifler });
   } catch (hata) {
-    return res.status(500).json({ error: 'API hatası: ' + hata.message });
+    console.error('[API] Claude error:', hata);
+    return res.status(500).json({ error: 'API hatası. Lütfen tekrar deneyin.' });
   }
 };
