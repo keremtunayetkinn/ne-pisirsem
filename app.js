@@ -61,7 +61,7 @@ const TRANSLATIONS = {
     paylasBtnLabel: 'Paylaş',
     paylasKopyala: 'Linki Kopyala',
     kopyalandi: 'Kopyalandı! ✓',
-    paylasMetni: (ad, aciklama, url) => `🍳 *${ad}*\n${aciklama}\n\nNe Pişirsem? → ${url}`,
+    paylasMetni: (ad, aciklama, url) => `🍳 *${ad}*\n${aciklama}\n\nTaste-Lab → ${url}`,
     removeAriaLabel: m => `${m} malzemesini sil`,
     recipeAriaLabel: ad => `${ad} tarifini görüntüle`,
     userInfoFallback: 'Bugün ne pişirsem?',
@@ -108,7 +108,7 @@ const TRANSLATIONS = {
     paylasBtnLabel: 'Share',
     paylasKopyala: 'Copy Link',
     kopyalandi: 'Copied! ✓',
-    paylasMetni: (ad, aciklama, url) => `🍳 *${ad}*\n${aciklama}\n\nWhat Should I Cook? → ${url}`,
+    paylasMetni: (ad, aciklama, url) => `🍳 *${ad}*\n${aciklama}\n\nTaste-Lab → ${url}`,
     removeAriaLabel: m => `Remove ${m}`,
     recipeAriaLabel: ad => `View ${ad} recipe`,
     userInfoFallback: 'What should I cook today?',
@@ -155,7 +155,7 @@ function dilUygula() {
     if (v !== undefined) el.placeholder = v;
   });
   document.documentElement.lang = state.dil;
-  document.title = state.dil === 'tr' ? 'Ne Pişirsem?' : 'What Should I Cook?';
+  document.title = 'Taste-Lab';
   const btnTr = document.getElementById('btn-dil-tr');
   const btnEn = document.getElementById('btn-dil-en');
   btnTr.classList.toggle('active', state.dil === 'tr');

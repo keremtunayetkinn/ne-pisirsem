@@ -1,4 +1,4 @@
-# Ne Pişirsem? 🍳
+# Taste-Lab 🍳
 
 An AI-powered recipe suggestion app. Enter the ingredients you have at home and get 2–3 original recipes from Turkish and world cuisines — complete with photos, step-by-step instructions, and a flavor profile chart.
 
